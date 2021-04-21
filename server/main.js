@@ -115,29 +115,19 @@ Meteor.methods({
     console.log('-------------Raw Deflated Payload (Buffer)----------------')
     console.log('');
 
-    let deflatedPayload = zlib.deflateRawSync(vcPayloadString_trimmed);
+    let deflatedPayload = zlib.deflateRawSync(JSON.stringify({"iss":"http://localhost:3000","nbf":1618966316,"vc":{}}
+));
     console.log(deflatedPayload);
 
     console.log('');
     console.log('---------------Stringified Payload (btoa)---------------------')
     console.log('');
 
-    let deflatedPayload_btoa = btoa(deflatedPayload);
-    console.log(deflatedPayload_btoa);
-    
-    // let json_web_signature = await jose.JWS
-    //   .createSign({ format: 'compact', fields: { zip: 'DEF' }}, signingKey)
-    //   .update(deflatedPayload)
-    //   .final()
-    //   .then(function(result){ 
-    //     return result;
-    //   });
-
     let json_web_signature = jws.sign({
       // header: { alg: 'ES256', zip: 'DEF', kid: get(keychain, 'keys[0].kid')},
       header: { alg: 'ES256', zip: 'DEF', kid: get(keychain, 'keys[0].kid')},
       secret: privatePem,
-      payload: deflatedPayload_btoa,
+      payload: deflatedPayload.toString('base64'),
       encoding: 'base64'
     });
 
